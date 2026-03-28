@@ -44,6 +44,17 @@
             android:exported="false"
             android:label="Ustawienia" />
 
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="Historia Alertów" />
+
+        <service
+            android:name=".MonitoringService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
         <receiver android:name=".CallReceiver"
             android:exported="true">
             <intent-filter>
