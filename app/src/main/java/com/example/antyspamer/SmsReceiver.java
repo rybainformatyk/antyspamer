@@ -17,9 +17,8 @@ public class SmsReceiver extends BroadcastReceiver {
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 if (pdus != null) {
                     SharedPreferences prefs = context.getSharedPreferences("SpamPrefs", Context.MODE_PRIVATE);
-                    String num1 = prefs.getString("num1", "");
-                    String num2 = prefs.getString("num2", "");
-
+                    DatabaseHelper dbHelper = new DatabaseHelper(context);
+                    
                     for (Object pdu : pdus) {
                         SmsMessage smsMessage;
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -34,17 +33,26 @@ public class SmsReceiver extends BroadcastReceiver {
 
                         Log.d("TrustCallSms", "SMS od: " + sender + " Treść: " + messageBody);
 
-                        // Sprawdzenie czy nadawca jest na liście zaufanych
-                        boolean isTrusted = (num1 != null && !num1.isEmpty() && sender.contains(num1)) ||
-                                            (num2 != null && !num2.isEmpty() && sender.contains(num2));
+                        boolean isTrusted = false;
+                        if (sender != null) {
+                            for (int i = 1; i <= 5; i++) {
+                                String guardianNum = prefs.getString("num" + i, "");
+                                if (!guardianNum.isEmpty() && sender.contains(guardianNum)) {
+                                    isTrusted = true;
+                                    break;
+                                }
+                            }
+                        }
 
                         if (isTrusted) {
                             Intent statusIntent = new Intent("com.example.antyspamer.SMS_CONFIRMATION");
                             if (messageBody.contains("potwierdzam")) {
                                 statusIntent.putExtra("status", "POTWIERDZONO");
+                                dbHelper.updateLastAlertStatus("CONFIRMED");
                                 context.sendBroadcast(statusIntent);
                             } else if (messageBody.contains("odrzucam")) {
                                 statusIntent.putExtra("status", "ODRZUCONO");
+                                dbHelper.updateLastAlertStatus("REJECTED");
                                 context.sendBroadcast(statusIntent);
                             }
                         }
