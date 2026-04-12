@@ -172,11 +172,11 @@ public class MonitoringService extends Service {
                 smsManager = SmsManager.getDefault();
             }
 
-            List<Guardian> guardians = dbHelper.getAllGuardians();
+            List<DatabaseHelper.Guardian> guardians = dbHelper.getAllGuardians();
             boolean sent = false;
-            for (Guardian guardian : guardians) {
-                String num = guardian.getPhone();
-                if (!num.isEmpty()) {
+            for (DatabaseHelper.Guardian guardian : guardians) {
+                String num = guardian.phone;
+                if (num != null && !num.isEmpty()) {
                     smsManager.sendTextMessage(num, null, message, null, null);
                     sent = true;
                 }

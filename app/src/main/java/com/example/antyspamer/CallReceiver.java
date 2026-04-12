@@ -14,6 +14,7 @@ public class CallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (intent == null || intent.getAction() == null) return;
         if (TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(intent.getAction())) {
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
@@ -25,8 +26,7 @@ public class CallReceiver extends BroadcastReceiver {
                     checkAndStartMonitoring(context, incomingNumber);
                 }
             } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-                Intent serviceIntent = new Intent(context, MonitoringService.class);
-                context.stopService(serviceIntent);
+                context.stopService(new Intent(context, MonitoringService.class));
             }
             lastState = state;
         }
@@ -34,12 +34,12 @@ public class CallReceiver extends BroadcastReceiver {
 
     private void checkAndStartMonitoring(Context context, String incomingNumber) {
         DatabaseHelper dbHelper = new DatabaseHelper(context);
-        List<Guardian> guardians = dbHelper.getAllGuardians();
+        List<DatabaseHelper.Guardian> guardians = dbHelper.getAllGuardians();
         
         boolean isGuardian = false;
         if (incomingNumber != null) {
-            for (Guardian g : guardians) {
-                if (!g.getPhone().isEmpty() && incomingNumber.contains(g.getPhone())) {
+            for (DatabaseHelper.Guardian g : guardians) {
+                if (g.phone != null && !g.phone.isEmpty() && incomingNumber.contains(g.phone)) {
                     isGuardian = true;
                     break;
                 }
@@ -47,9 +47,7 @@ public class CallReceiver extends BroadcastReceiver {
         }
 
         if (!isGuardian) {
-            Log.d("TrustCall", "Uruchamiam monitoring dla: " + incomingNumber);
-            Intent serviceIntent = new Intent(context, MonitoringService.class);
-            ContextCompat.startForegroundService(context, serviceIntent);
+            ContextCompat.startForegroundService(context, new Intent(context, MonitoringService.class));
         } else {
             Toast.makeText(context, "Rozmowa z zaufanym opiekunem.", Toast.LENGTH_SHORT).show();
         }

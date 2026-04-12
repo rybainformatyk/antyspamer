@@ -3,10 +3,10 @@ package com.example.antyspamer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import java.util.List;
 
 public class SmsReceiver extends BroadcastReceiver {
     @Override
@@ -16,8 +16,8 @@ public class SmsReceiver extends BroadcastReceiver {
             if (bundle != null) {
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 if (pdus != null) {
-                    SharedPreferences prefs = context.getSharedPreferences("SpamPrefs", Context.MODE_PRIVATE);
                     DatabaseHelper dbHelper = new DatabaseHelper(context);
+                    List<DatabaseHelper.Guardian> guardians = dbHelper.getAllGuardians();
                     
                     for (Object pdu : pdus) {
                         SmsMessage smsMessage;
@@ -31,13 +31,10 @@ public class SmsReceiver extends BroadcastReceiver {
                         String sender = smsMessage.getDisplayOriginatingAddress();
                         String messageBody = smsMessage.getMessageBody().toLowerCase().trim();
 
-                        Log.d("TrustCallSms", "SMS od: " + sender + " Treść: " + messageBody);
-
                         boolean isTrusted = false;
                         if (sender != null) {
-                            for (int i = 1; i <= 5; i++) {
-                                String guardianNum = prefs.getString("num" + i, "");
-                                if (!guardianNum.isEmpty() && sender.contains(guardianNum)) {
+                            for (DatabaseHelper.Guardian g : guardians) {
+                                if (g.phone != null && !g.phone.isEmpty() && sender.contains(g.phone)) {
                                     isTrusted = true;
                                     break;
                                 }

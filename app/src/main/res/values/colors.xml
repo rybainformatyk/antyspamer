@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
+    <!-- Material 3 Colors -->
     <color name="primary">#D0BCFF</color>
     <color name="onPrimary">#381E72</color>
     <color name="primaryContainer">#4F378B</color>
@@ -14,14 +15,25 @@
     <color name="error">#F2B8B5</color>
     <color name="onError">#601410</color>
     
+    <!-- Bounded Shapes Colors -->
     <color name="background">#1C1B1F</color>
     <color name="surface">#25232A</color>
     <color name="surfaceVariant">#49454F</color>
     <color name="onSurface">#E6E1E5</color>
     <color name="onSurfaceVariant">#CAC4D0</color>
     
+    <!-- Material Components Colors -->
     <color name="mic_idle">#49454F</color>
     <color name="mic_listening">#B6FFB6</color>
     <color name="mic_active">#80D8FF</color>
     <color name="mic_error">#FF8A80</color>
+
+    <!-- New Colors -->
+    <color name="status_pending_bg">#66FFFFFF</color>
+    <color name="status_confirmed_bg">#44FF0000</color>
+    <color name="status_rejected_bg">#AA00FF00</color>
+
+    <color name="status_pending_text">#AAAAAA</color>
+    <color name="status_confirmed_text">#FFFFFF</color>
+    <color name="status_rejected_text">#FFFFFF</color>
 </resources>

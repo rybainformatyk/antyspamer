@@ -5,13 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "TrustCallDB";
-    private static final int DATABASE_VERSION = 2; // Incremented version
+    private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_HISTORY = "history";
     public static final String COL_ID = "id";
@@ -25,92 +24,76 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_G_NAME = "name";
     public static final String COL_G_PHONE = "phone";
 
+    // Modeli danych wewnątrz Helpera, by ograniczyć liczbę plików
+    public static class Guardian {
+        public int id;
+        public String name, phone;
+        public Guardian(int id, String name, String phone) { this.id = id; this.name = name; this.phone = phone; }
+    }
+
+    public static class AlertItem {
+        public int id;
+        public String keyword, context, timestamp, status;
+        public AlertItem(int id, String keyword, String context, String timestamp, String status) {
+            this.id = id; this.keyword = keyword; this.context = context; this.timestamp = timestamp; this.status = status;
+        }
+    }
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createHistoryTable = "CREATE TABLE " + TABLE_HISTORY + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_KEYWORD + " TEXT, " +
-                COL_CONTEXT + " TEXT, " +
-                COL_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                COL_STATUS + " TEXT)";
-        db.execSQL(createHistoryTable);
-
-        String createGuardiansTable = "CREATE TABLE " + TABLE_GUARDIANS + " (" +
-                COL_G_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_G_NAME + " TEXT, " +
-                COL_G_PHONE + " TEXT)";
-        db.execSQL(createGuardiansTable);
+        db.execSQL("CREATE TABLE " + TABLE_HISTORY + " (" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_KEYWORD + " TEXT, " + COL_CONTEXT + " TEXT, " + COL_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " + COL_STATUS + " TEXT)");
+        db.execSQL("CREATE TABLE " + TABLE_GUARDIANS + " (" + COL_G_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_G_NAME + " TEXT, " + COL_G_PHONE + " TEXT)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
-            String createGuardiansTable = "CREATE TABLE " + TABLE_GUARDIANS + " (" +
-                    COL_G_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COL_G_NAME + " TEXT, " +
-                    COL_G_PHONE + " TEXT)";
-            db.execSQL(createGuardiansTable);
+            db.execSQL("CREATE TABLE " + TABLE_GUARDIANS + " (" + COL_G_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_G_NAME + " TEXT, " + COL_G_PHONE + " TEXT)");
         }
     }
 
-    // History methods
-    public long addAlert(String keyword, String context, String status) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_KEYWORD, keyword);
-        values.put(COL_CONTEXT, context);
-        values.put(COL_STATUS, status);
-        return db.insert(TABLE_HISTORY, null, values);
+    public void addAlert(String keyword, String context, String status) {
+        ContentValues v = new ContentValues();
+        v.put(COL_KEYWORD, keyword); v.put(COL_CONTEXT, context); v.put(COL_STATUS, status);
+        getWritableDatabase().insert(TABLE_HISTORY, null, v);
     }
 
     public void updateLastAlertStatus(String status) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_HISTORY + " SET " + COL_STATUS + " = '" + status + 
-                   "' WHERE " + COL_ID + " = (SELECT MAX(" + COL_ID + ") FROM " + TABLE_HISTORY + ")");
+        getWritableDatabase().execSQL("UPDATE " + TABLE_HISTORY + " SET " + COL_STATUS + " = '" + status + "' WHERE " + COL_ID + " = (SELECT MAX(" + COL_ID + ") FROM " + TABLE_HISTORY + ")");
     }
 
     public List<AlertItem> getAllHistory() {
         List<AlertItem> list = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_HISTORY + " ORDER BY " + COL_ID + " DESC";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
-            do {
-                list.add(new AlertItem(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)));
-            } while (cursor.moveToNext());
+        Cursor c = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_HISTORY + " ORDER BY " + COL_ID + " DESC", null);
+        if (c.moveToFirst()) {
+            do { list.add(new AlertItem(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4))); } while (c.moveToNext());
         }
-        cursor.close();
+        c.close();
         return list;
     }
 
-    // Guardian methods
-    public long addGuardian(String name, String phone) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_G_NAME, name);
-        values.put(COL_G_PHONE, phone);
-        return db.insert(TABLE_GUARDIANS, null, values);
+    public void addGuardian(String name, String phone) {
+        ContentValues v = new ContentValues();
+        v.put(COL_G_NAME, name); v.put(COL_G_PHONE, phone);
+        getWritableDatabase().insert(TABLE_GUARDIANS, null, v);
     }
 
     public void deleteGuardian(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_GUARDIANS, COL_G_ID + "=?", new String[]{String.valueOf(id)});
+        getWritableDatabase().delete(TABLE_GUARDIANS, COL_G_ID + "=?", new String[]{String.valueOf(id)});
     }
 
     public List<Guardian> getAllGuardians() {
         List<Guardian> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_GUARDIANS, null);
-        if (cursor.moveToFirst()) {
-            do {
-                list.add(new Guardian(cursor.getInt(0), cursor.getString(1), cursor.getString(2)));
-            } while (cursor.moveToNext());
+        Cursor c = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_GUARDIANS, null);
+        if (c.moveToFirst()) {
+            do { list.add(new Guardian(c.getInt(0), c.getString(1), c.getString(2))); } while (c.moveToNext());
         }
-        cursor.close();
+        c.close();
         return list;
     }
 }
