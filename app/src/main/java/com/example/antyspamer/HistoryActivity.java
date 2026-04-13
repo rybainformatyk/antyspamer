@@ -25,7 +25,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        MaterialToolbar toolbar = findViewById(R.id.historyToolbar);
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setNavigationOnClickListener(v -> finish());
         }

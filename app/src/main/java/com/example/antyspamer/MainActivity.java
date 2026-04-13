@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -24,11 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -59,6 +62,19 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 101;
     private static final String CHANNEL_ID = "TrustCallAlerts";
     private boolean isProtectionActive = false;
+
+    private TextInputEditText currentDialogNameInput;
+    private TextInputEditText currentDialogPhoneInput;
+
+    private final ActivityResultLauncher<Intent> contactPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri contactUri = result.getData().getData();
+                    queryContactData(contactUri);
+                }
+            }
+    );
 
     private final String[] financialKeywords = {"blik", "przelew", "pieniądze", "bank", "karta", "pin", "kredyt"};
     private final String[] securityKeywords = {"hasło", "login", "weryfikacja", "autoryzacja", "zablokowane", "sms"};
@@ -137,14 +153,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAddGuardianDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_guardian, null);
-        TextInputEditText nameInput = view.findViewById(R.id.dialogGuardianName);
-        TextInputEditText phoneInput = view.findViewById(R.id.dialogGuardianPhone);
+        currentDialogNameInput = view.findViewById(R.id.dialogGuardianName);
+        currentDialogPhoneInput = view.findViewById(R.id.dialogGuardianPhone);
+        Button pickContactBtn = view.findViewById(R.id.pickContactBtn);
+
+        pickContactBtn.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 102);
+            } else {
+                pickContact();
+            }
+        });
 
         new AlertDialog.Builder(this)
             .setView(view)
             .setPositiveButton("Dodaj", (d, w) -> {
-                String n = nameInput.getText().toString().trim();
-                String p = phoneInput.getText().toString().trim();
+                String n = currentDialogNameInput.getText().toString().trim();
+                String p = currentDialogPhoneInput.getText().toString().trim();
                 if (!n.isEmpty() && !p.isEmpty()) {
                     dbHelper.addGuardian(n, p);
                     loadGuardians();
@@ -154,6 +179,25 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton("Anuluj", null)
             .show();
+    }
+
+    private void pickContact() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+        contactPickerLauncher.launch(intent);
+    }
+
+    private void queryContactData(Uri contactUri) {
+        String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+        try (Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                String number = cursor.getString(0);
+                String name = cursor.getString(1);
+                if (currentDialogNameInput != null) currentDialogNameInput.setText(name);
+                if (currentDialogPhoneInput != null) currentDialogPhoneInput.setText(number);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void toggleProtection() {
@@ -173,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startBtn.setText("Włącz ochronę");
             statusText.setText("Ochrona wyłączona");
-            statusText.setTextColor(ContextCompat.getColor(this, R.color.mic_idle));
+            statusText.setTextColor(Color.BLACK); // Ustawienie czarnego tekstu gdy nie działa
             if (micIndicator != null) micIndicator.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.mic_idle));
         }
     }
@@ -251,6 +295,12 @@ public class MainActivity extends AppCompatActivity {
             for (int res : gr) if (res != PackageManager.PERMISSION_GRANTED) allGranted = false;
             if (allGranted) startMonitoringService();
             else Toast.makeText(this, "Wymagane uprawnienia!", Toast.LENGTH_SHORT).show();
+        } else if (rc == 102) {
+            if (gr.length > 0 && gr[0] == PackageManager.PERMISSION_GRANTED) {
+                pickContact();
+            } else {
+                Toast.makeText(this, "Dostęp do kontaktów odrzucony", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

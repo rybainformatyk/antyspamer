@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Numer telefonu"
+        android:layout_marginBottom="8dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -41,5 +42,14 @@
             android:layout_height="wrap_content"
             android:inputType="phone"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/pickContactBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wybierz z kontaktów"
+        style="@style/Widget.Material3.Button.TextButton"
+        app:icon="@android:drawable/ic_menu_myplaces"
+        android:layout_marginTop="4dp"/>
 
 </LinearLayout>
