@@ -3,25 +3,33 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <color name="primary">#D0BCFF</color>
-    <color name="onPrimary">#381E72</color>
-    <color name="primaryContainer">#4F378B</color>
-    <color name="onPrimaryContainer">#EADDFF</color>
+    <!-- Material 3 Light Colors -->
+    <color name="primary">#6750A4</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="primaryContainer">#EADDFF</color>
+    <color name="onPrimaryContainer">#21005D</color>
     
-    <color name="secondary">#CCC2DC</color>
-    <color name="onSecondary">#332D41</color>
+    <color name="secondary">#625B71</color>
+    <color name="onSecondary">#FFFFFF</color>
     
-    <color name="error">#F2B8B5</color>
-    <color name="onError">#601410</color>
+    <color name="error">#B3261E</color>
+    <color name="onError">#FFFFFF</color>
+    <color name="outline">#79747E</color>
     
-    <color name="background">#1C1B1F</color>
-    <color name="surface">#25232A</color>
-    <color name="surfaceVariant">#49454F</color>
-    <color name="onSurface">#E6E1E5</color>
-    <color name="onSurfaceVariant">#CAC4D0</color>
+    <color name="background">#FFFBFE</color>
+    <color name="surface">#FFFBFE</color>
+    <color name="surfaceVariant">#E7E0EC</color>
+    <color name="onSurface">#1C1B1F</color>
+    <color name="onSurfaceVariant">#49454F</color>
     
     <color name="mic_idle">#49454F</color>
-    <color name="mic_listening">#B6FFB6</color>
-    <color name="mic_active">#80D8FF</color>
-    <color name="mic_error">#FF8A80</color>
+    <color name="mic_listening">#1B5E20</color>
+
+    <color name="status_pending_bg">#FFF9C4</color>
+    <color name="status_confirmed_bg">#FFCDD2</color>
+    <color name="status_rejected_bg">#C8E6C9</color>
+
+    <color name="status_pending_text">#FBC02D</color>
+    <color name="status_confirmed_text">#D32F2F</color>
+    <color name="status_rejected_text">#388E3C</color>
 </resources>

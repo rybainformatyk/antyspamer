@@ -63,9 +63,9 @@ public class MonitoringService extends Service {
                 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("TrustCall Aktywny")
-                .setContentText("Monitoruję rozmowę dla Twojego bezpieczeństwa...")
-                .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
+                .setContentTitle("TrustCall chroni Twoją rozmowę")
+                .setContentText("Zalecany tryb głośnomówiący, aby skanować rozmówcę.")
+                .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setOngoing(true)
@@ -158,7 +158,8 @@ public class MonitoringService extends Service {
 
     private void sendAlertToGuardians(String keyword, String fullText) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastSmsTime < 120000) return;
+        // Zmniejszono cooldown na 10 sekund do testów (było 120000 ms - 2 minuty)
+        if (currentTime - lastSmsTime < 10000) return;
 
         String userName = sharedPreferences.getString("user_name", "Twój bliski");
         String message = "ALERT TrustCall! " + userName + " może być oszukiwany. Wykryto: \"" + 
@@ -172,13 +173,23 @@ public class MonitoringService extends Service {
                 smsManager = SmsManager.getDefault();
             }
 
-            List<Guardian> guardians = dbHelper.getAllGuardians();
+            List<DatabaseHelper.Guardian> guardians = dbHelper.getAllGuardians();
             boolean sent = false;
-            for (Guardian guardian : guardians) {
-                String num = guardian.getPhone();
-                if (!num.isEmpty()) {
-                    smsManager.sendTextMessage(num, null, message, null, null);
+            
+            for (DatabaseHelper.Guardian guardian : guardians) {
+                String num = guardian.phone;
+                if (num != null && !num.isEmpty()) {
+                    // Usuwamy wszystkie białe znaki i spacje z numeru
+                    String cleanNum = num.replaceAll("\\s+", "");
+                    
+                    // Podział długiej wiadomości na paczki (aby pomieściła polskie znaki i długą wypowiedź)
+                    ArrayList<String> parts = smsManager.divideMessage(message);
+                    
+                    // Wysyłanie wiadomości wieloczęściowej zamiast pojedynczej
+                    smsManager.sendMultipartTextMessage(cleanNum, null, parts, null, null);
                     sent = true;
+                    
+                    Log.d("TrustCallService", "Wysłano SMS do: " + cleanNum);
                 }
             }
             if (sent) lastSmsTime = currentTime;

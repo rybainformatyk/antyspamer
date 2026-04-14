@@ -3,22 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="2dp"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:strokeWidth="1dp"
-    app:strokeColor="@color/surfaceVariant">
+    app:strokeColor="?attr/colorSurfaceVariant">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:id="@+id/historyKeyword"
@@ -28,36 +31,75 @@
                 android:text="Słowo klucz"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/primary"/>
+                android:textColor="?attr/colorPrimary"/>
 
-            <TextView
-                android:id="@+id/historyStatus"
+            <!-- Pigułka dla Statusu (Badge) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="STATUS"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:background="@drawable/status_bg_pending"/>
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <TextView
+                    android:id="@+id/historyStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STATUS"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:background="@drawable/status_bg_pending"/>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@android:drawable/ic_menu_recent_history"
+                app:tint="?attr/colorOutline"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/historyTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2023-10-27 12:00"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOutline"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorSurfaceVariant"
+            android:layout_marginBottom="12dp"/>
+
         <TextView
-            android:id="@+id/historyTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2023-10-27 12:00"
+            android:text="Kontekst wypowiedzi:"
             android:textSize="12sp"
-            android:textColor="@color/onSurfaceVariant"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="?attr/colorOutline"
+            android:layout_marginBottom="4dp"/>
 
         <TextView
             android:id="@+id/historyContext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Treść rozmowy w której wykryto słowo..."
-            android:textSize="14sp"
-            android:textColor="@color/onSurface"/>
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="?attr/colorOnSurface"
+            android:lineSpacingExtra="4dp"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
