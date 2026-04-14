@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startBtn.setText("Włącz ochronę");
             statusText.setText("Ochrona wyłączona");
-            statusText.setTextColor(Color.BLACK); // Ustawienie czarnego tekstu gdy nie działa
+            statusText.setTextColor(ContextCompat.getColor(this, R.color.onSurfaceVariant)); // Naprawiono kolor dla trybu ciemnego
             if (micIndicator != null) micIndicator.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.mic_idle));
         }
     }
@@ -274,11 +274,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        String[] ps = {Manifest.permission.RECORD_AUDIO, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_PHONE_STATE};
         ArrayList<String> toRequest = new ArrayList<>();
-        for (String p : ps) if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) toRequest.add(p);
-        if (toRequest.isEmpty()) startMonitoringService();
-        else ActivityCompat.requestPermissions(this, toRequest.toArray(new String[0]), PERMISSION_REQUEST_CODE);
+        toRequest.add(Manifest.permission.RECORD_AUDIO);
+        toRequest.add(Manifest.permission.SEND_SMS);
+        toRequest.add(Manifest.permission.RECEIVE_SMS);
+        toRequest.add(Manifest.permission.READ_PHONE_STATE);
+        toRequest.add(Manifest.permission.READ_CALL_LOG); // Dodano READ_CALL_LOG
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            toRequest.add(Manifest.permission.POST_NOTIFICATIONS); // Dodano POST_NOTIFICATIONS dla nowszych Androidów
+        }
+
+        ArrayList<String> neededPermissions = new ArrayList<>();
+        for (String p : toRequest) {
+            if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(p);
+            }
+        }
+
+        if (neededPermissions.isEmpty()) {
+            startMonitoringService();
+        } else {
+            ActivityCompat.requestPermissions(this, neededPermissions.toArray(new String[0]), PERMISSION_REQUEST_CODE);
+        }
     }
 
     private void startMonitoringService() {

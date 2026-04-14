@@ -4,157 +4,208 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:fitsSystemWindows="true"
+    android:background="?attr/colorSurface">
 
-    <androidx.core.widget.NestedScrollView
+    <!-- BANER NA GÓRZE -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="24dp">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:background="?attr/colorSurface"
+        app:elevation="4dp">
 
-        <LinearLayout
-            android:id="@+id/main"
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="32dp">
-
-            <LinearLayout
+            android:layout_height="?attr/actionBarSize">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="24dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TrustCall"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chroń bliskich przed oszustami"
-                        android:textColor="@color/onSurfaceVariant"/>
-                </LinearLayout>
-
+                    android:text="TrustCall"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_centerVertical="true"/>
                 <ImageButton
                     android:id="@+id/historyBtn"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@android:drawable/ic_menu_recent_history"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/primary"
+                    app:tint="?attr/colorPrimary"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
                     android:contentDescription="Historia"/>
-            </LinearLayout>
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Twoi Opiekunowie"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary"
-                android:layout_marginBottom="8dp"/>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="32dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/guardiansRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="12dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/addGuardianBtn"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="+ Dodaj Opiekuna"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.Material3.Button.OutlinedButton"/>
-
-            <Button
-                android:id="@+id/startBtn"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Włącz ochronę"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.Material3.Button.TonalButton"/>
-
+            <!-- Karta Głównego Statusu (Dashboard) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="24dp"
-                app:cardBackgroundColor="@color/surfaceVariant"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="0dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="32dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="24dp"
+                    android:gravity="center_horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
+                        android:layout_marginBottom="16dp">
 
                         <View
                             android:id="@+id/micIndicator"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:background="@drawable/mic_dot"
-                            android:layout_marginRight="12dp"/>
+                            android:layout_marginEnd="12dp"/>
 
                         <TextView
                             android:id="@+id/statusText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Status: Nieaktywny"
-                            android:textColor="@color/onSurfaceVariant"
-                            android:textSize="14sp"/>
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
                     </LinearLayout>
 
+                    <!-- PRZYCISK Z OBRAMÓWKĄ -->
+                    <Button
+                        android:id="@+id/startBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="Włącz ochronę"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:icon="@android:drawable/ic_btn_speak_now"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        app:strokeWidth="2dp"
+                        app:strokeColor="?attr/colorPrimary"
+                        android:layout_marginBottom="16dp"/>
+
                     <TextView
-                        android:id="@+id/speechText"
+                        android:id="@+id/warningText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Rozpoznany tekst..."
-                        android:textColor="@color/onSurface"
-                        android:textSize="18sp"
-                        android:lineSpacingExtra="4dp"
-                        android:minLines="2"/>
+                        android:text=""
+                        android:textColor="?attr/colorError"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_marginBottom="8dp"/>
+
+                    <!-- Wewnętrzna karta z usłyszanym tekstem -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="?attr/colorSurface"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="?attr/colorOutline">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ostatnio usłyszane:"
+                                android:textSize="12sp"
+                                android:textColor="?attr/colorOutline"
+                                android:layout_marginBottom="8dp"/>
+
+                            <TextView
+                                android:id="@+id/speechText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Nasłuchiwanie wyłączone..."
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="16sp"
+                                android:textStyle="italic"
+                                android:lineSpacingExtra="4dp"
+                                android:minLines="2"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/warningText"
+            <!-- Sekcja Opiekunów -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/error"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Twoi Opiekunowie"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"/>
+
+                <Button
+                    android:id="@+id/addGuardianBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dodaj"
+                    app:icon="@android:drawable/ic_input_add"
+                    style="@style/Widget.Material3.Button.TextButton"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/guardiansRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="24dp"/>
 
             <Button
                 android:id="@+id/settingsBtn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:text="Ustawienia zaawansowane"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.Button.TextButton"/>
+                app:icon="@android:drawable/ic_menu_preferences"
+                app:iconGravity="textStart"
+                style="@style/Widget.Material3.Button.OutlinedButton"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
